@@ -10,7 +10,7 @@ import (
 )
 
 /*
-*
+* Part 1
 Instead, the Elves discover an assortment of notes and lists of historically significant locations!
 This seems to be the planning the Chief Historian was doing before he left.
 Perhaps these notes can be used to determine which locations to search?
@@ -48,6 +48,28 @@ The next numbers to pair up are 3 and 4, a distance of 1.
 The fifth-smallest numbers in each list are 3 and 5, a distance of 2.
 Finally, the largest number in the left list is 4, while the largest number in the right list is 9; these are a distance 5 apart.
 To find the total distance between the left list and the right list, add up the distances between all of the pairs you found. In the example above, this is 2 + 1 + 0 + 1 + 2 + 5, a total distance of 11!
+*/
+
+/** 2nd Part
+This time, you'll need to figure out exactly how often each number from the left list appears in the right list. Calculate a total similarity score by adding up each number in the left list after multiplying it by the number of times that number appears in the right list.
+
+Here are the same example lists again:
+
+3   4
+4   3
+2   5
+1   3
+3   9
+3   3
+For these example lists, here is the process of finding the similarity score:
+
+The first number in the left list is 3. It appears in the right list three times, so the similarity score increases by 3 * 3 = 9.
+The second number in the left list is 4. It appears in the right list once, so the similarity score increases by 4 * 1 = 4.
+The third number in the left list is 2. It does not appear in the right list, so the similarity score does not increase (2 * 0 = 0).
+The fourth number, 1, also does not appear in the right list.
+The fifth number, 3, appears in the right list three times; the similarity score increases by 9.
+The last number, 3, appears in the right list three times; the similarity score again increases by 9.
+So, for these example lists, the similarity score at the end of this process is 31 (9 + 4 + 0 + 0 + 9 + 9).
 */
 
 func readTextFile(filename string) []string {
@@ -144,8 +166,36 @@ func CalculateDistanceBetweenTwoLists(inputFile string) int {
 	return calculateTotalDistance(pairs)
 }
 
+func calculateSimilarityCounter(left int, rightList []int) int {
+	var counter int
+
+	for _, right := range rightList {
+		if right == left {
+			counter++
+		}
+	}
+
+	return counter
+}
+
+func CalculateSimilarityScore(inputFile string) int {
+	var score int
+	lines := readTextFile(inputFile)
+	leftList, rightList := createSortedLeftRightLists(lines)
+
+	for _, left := range leftList {
+		similarityCounter := calculateSimilarityCounter(left, rightList)
+		score += (left * similarityCounter)
+	}
+	return score
+}
+
 func main() {
 	log.Println("Advent of Code 2024 - Day 01")
-	result := CalculateDistanceBetweenTwoLists("input.txt")
-	log.Println("result is:", result)
+
+	resultDistance := CalculateDistanceBetweenTwoLists("input.txt")
+	log.Println("resultDistance is:", resultDistance)
+
+	resultSimilarityScore := CalculateSimilarityScore("input.txt")
+	log.Println("resultSimilarityScore is:", resultSimilarityScore)
 }
