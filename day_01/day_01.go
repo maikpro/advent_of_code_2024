@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
+
+	"github.com/maikpro/advent_of_code_2024/shared"
 )
 
 /*
@@ -159,7 +161,7 @@ func calculateTotalDistance(pairs []Pair) int {
 }
 
 func CalculateDistanceBetweenTwoLists(inputFile string) int {
-	lines := readTextFile(inputFile)
+	lines := shared.ReadTextFile(inputFile)
 	leftList, rightList := createSortedLeftRightLists(lines)
 	pairs := createPairs(leftList, rightList)
 
@@ -180,7 +182,7 @@ func calculateSimilarityCounter(left int, rightList []int) int {
 
 func CalculateSimilarityScore(inputFile string) int {
 	var score int
-	lines := readTextFile(inputFile)
+	lines := shared.ReadTextFile(inputFile)
 	leftList, rightList := createSortedLeftRightLists(lines)
 
 	for _, left := range leftList {
@@ -193,9 +195,9 @@ func CalculateSimilarityScore(inputFile string) int {
 func main() {
 	log.Println("Advent of Code 2024 - Day 01")
 
-	resultDistance := CalculateDistanceBetweenTwoLists("input.txt")
+	resultDistance := CalculateDistanceBetweenTwoLists("/day_01/input.txt")
 	log.Println("resultDistance is:", resultDistance)
 
-	resultSimilarityScore := CalculateSimilarityScore("input.txt")
+	resultSimilarityScore := CalculateSimilarityScore("/day_01/input.txt")
 	log.Println("resultSimilarityScore is:", resultSimilarityScore)
 }
