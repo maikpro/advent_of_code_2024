@@ -43,3 +43,28 @@ func TestCheckReports(t *testing.T) {
 		t.Errorf("expected '%d' but got '%d'", want, got)
 	}
 }
+
+func TestIsReportSafeV2(t *testing.T) {
+	tests := []struct {
+		name     string
+		index    int
+		expected bool
+	}{
+		{"Safe without removing any level", 0, true},
+		{"Unsafe regardless of which level is removed.", 1, false},
+		{"Unsafe regardless of which level is removed.", 2, false},
+		{"Safe by removing the second level, 3.", 3, true},
+		{"Safe by removing the third level, 4.", 4, true},
+		{"Safe without removing any level.", 5, true},
+	}
+	reports := CreateReports(shared.ReadTextFile("/example.txt"))
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got, _ := FindBadLevelIndex(reports[tc.index])
+			if got != tc.expected {
+				t.Errorf("IsReportSafeV2(%d) = %t; want %t", tc.index, got, tc.expected)
+			}
+		})
+	}
+}

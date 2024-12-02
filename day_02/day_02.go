@@ -112,6 +112,38 @@ func IsReportSafe(report Report) bool {
 	return true
 }
 
+func FindBadLevelIndex(report Report) (bool, int) {
+	isIncreasing := false
+	for i := 0; i < len(report.levels)-1; i++ {
+		currentLevel := report.levels[i]
+		nextLevel := report.levels[i+1]
+
+		diff := calculateDifferance(currentLevel.value, nextLevel.value)
+		if diff == 0 || diff > 3 {
+			return false, i + 1
+		}
+
+		// decide if increasing or decreasing by first two
+		if report.levels[0].value < report.levels[1].value {
+			isIncreasing = true
+		}
+
+		// The levels are either all increasing or all decreasing.
+		if isIncreasing && currentLevel.value > nextLevel.value {
+			log.Println("false:", report.levels)
+			return false, i + 1
+		}
+
+		if !isIncreasing && currentLevel.value < nextLevel.value {
+
+			log.Println("false:", report.levels)
+			return false, i + 1
+		}
+
+	}
+	return true, 0
+}
+
 func countSafeReports(reports []Report) int {
 	var counter int
 
@@ -130,9 +162,38 @@ func CheckReports(filename string) int {
 	return countSafeReports(reports)
 }
 
+func countSafeReportsV2(reports []Report) int {
+	var counter int
+
+	for _, report := range reports {
+		result, removeIndex := FindBadLevelIndex(report)
+
+		if result {
+			counter++
+		} else {
+			report.levels = append(report.levels[:removeIndex], report.levels[removeIndex+1:]...)
+
+			if IsReportSafe(report) {
+				counter++
+			}
+		}
+	}
+
+	return counter
+}
+
+func CheckReportsAndTolerateSingleBadLevel(filename string) int {
+	lines := shared.ReadTextFile(filename)
+	reports := CreateReports(lines)
+	return countSafeReportsV2(reports)
+}
+
 func main() {
 	log.Println("Advent of Code 2024 - Day 02")
 
 	result := CheckReports("/day_02/input.txt")
 	log.Println("result:", result)
+
+	resultWithTolerateSingleBadLevel := CheckReportsAndTolerateSingleBadLevel("/day_02/input.txt")
+	log.Println("resultWithTolerateSingleBadLevel:", resultWithTolerateSingleBadLevel)
 }
